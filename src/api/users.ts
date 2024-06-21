@@ -1,4 +1,18 @@
 import request from '@/utils/request'
+import { IUserData } from './types'
+
+export const defaultUserData: IUserData = {
+  id: 0,
+  status: '',
+  username: '',
+  password: '',
+  name: '',
+  email: '',
+  phone: '',
+  avatar: '',
+  introduction: '',
+  roles: []
+}
 
 export const getUsers = (params: any) =>
   request({
@@ -27,6 +41,13 @@ export const updateUser = (username: string, data: any) =>
     data
   })
 
+export const createUser = (data: any) =>
+  request({
+    url: '/users',
+    method: 'post',
+    data
+  })
+
 export const deleteUser = (username: string) =>
   request({
     url: `/users/${username}`,
@@ -35,7 +56,7 @@ export const deleteUser = (username: string) =>
 
 export const login = (data: any) =>
   request({
-    url: '/auth/login', //users/login
+    url: 'users/login', //'/auth/login',
     method: 'post',
     data
   })

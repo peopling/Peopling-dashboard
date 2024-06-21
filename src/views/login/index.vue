@@ -71,17 +71,6 @@
         {{ $t('login.logIn') }}
       </el-button>
 
-      <div style="position:relative">
-        <div class="tips">
-          <span>{{ $t('login.username') }} : admin </span>
-          <span>{{ $t('login.password') }} : {{ $t('login.any') }} </span>
-        </div>
-        <div class="tips">
-          <span>{{ $t('login.username') }} : editor </span>
-          <span>{{ $t('login.password') }} : {{ $t('login.any') }} </span>
-        </div>
-
-      </div>
     </el-form>
   </div>
 </template>
@@ -119,8 +108,8 @@ export default class extends Vue {
   }
 
   private loginForm = {
-    username: 'admin',
-    password: '111111'
+    username: '',
+    password: ''
   }
 
   private loginRules = {
@@ -155,7 +144,8 @@ export default class extends Vue {
 
   private checkCapslock(e: KeyboardEvent) {
     const { key } = e
-    this.capsTooltip = key !== null && key.length === 1 && (key >= 'A' && key <= 'Z')
+    this.capsTooltip = false
+    // key !== null && key.length === 1 && (key >= 'A' && key <= 'Z')
   }
 
   private showPwd() {

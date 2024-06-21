@@ -58,13 +58,14 @@ class User extends VuexModule implements IUserState {
   public async Login(userInfo: { username: string, password: string}) {
     let { username, password } = userInfo
     username = username.trim()
-  
     const { data } = await login({ username, password })
-
-
-
-    setToken(data.accessToken)
-    this.SET_TOKEN(data.accessToken)
+    console.log(data)
+    if (data.user.status === 'active') {
+      setToken(data.accessToken)
+      this.SET_TOKEN(data.accessToken)
+    } else {
+      console.warn('Kullanıcı pasiftir. Lütfen yöneticinizle görüşünüz')
+    }
   }
 
   @Action
@@ -85,8 +86,6 @@ class User extends VuexModule implements IUserState {
     }
     const { roles, name, avatar, introduction, email } = data.user
 
-
-    debugger
     // roles must be a non-empty array
     if (!roles || roles.length <= 0) {
       throw Error('GetUserInfo: roles must be a non-null array!')

@@ -1,23 +1,5 @@
 <template>
   <div class="dashboard-peopling-container">
-    <div class="clearfix">
-      <pan-thumb
-        :image="avatar"
-        style="float: left"
-      >
-        Senin Rolün:
-        <span
-          v-for="item in roles"
-          :key="item"
-          class="info-roles"
-        >{{ item }}</span>
-      </pan-thumb>
-      <github-corner style="position: absolute; top: 0px; border: 0; right: 0;" />
-      <div class="info-container">
-        <span class="display_name">{{ name }}</span>
-        <span style="font-size:20px;padding-top:20px;display:inline-block;">Peopling Admin Dashboard</span>
-      </div>
-    </div>
     <div>
       <img
         :src="emptyGif"

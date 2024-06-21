@@ -1,18 +1,18 @@
- import request from '@/utils/request'
+import request from '@/utils/request'
 
 export const getRoles = (params: any) =>
   request({
     url: '/roles',
     method: 'get',
     params
-  }) 
+  })
 
 export const createRole = (data: any) =>
   request({
     url: '/roles',
     method: 'post',
     data
-  }) 
+  })
 
 export const updateRole = (id: number, data: any) =>
   request({
@@ -21,7 +21,7 @@ export const updateRole = (id: number, data: any) =>
     data
   })
 
-export const deleteRole = (id: number) =>
+export const deleteRole = (id: any) =>
   request({
     url: `/roles/${id}`,
     method: 'delete'

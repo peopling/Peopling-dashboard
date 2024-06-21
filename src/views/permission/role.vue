@@ -46,11 +46,13 @@
           <el-button
             type="primary"
             size="small"
+
             @click="handleEdit(scope)"
           >
             {{ $t('permission.editPermission') }}
           </el-button>
           <el-button
+            :disabled="scope.row.key === 'developer-admin' || scope.row.key === 'peopling-admin'"
             type="danger"
             size="small"
             @click="handleDelete(scope)"
@@ -66,11 +68,13 @@
       :title="dialogType==='edit'?'Edit Role':'New Role'"
     >
       <el-form
+         ref="dataForm"
+        :rules="rules"
         :model="role"
         label-width="80px"
         label-position="left"
       >
-        <el-form-item label="Name">
+        <el-form-item label="Name"  prop="name">
           <el-input
             v-model="role.name"
             placeholder="Role Name"
@@ -118,9 +122,13 @@
 import path from 'path'
 import { cloneDeep } from 'lodash'
 import { Component, Vue } from 'vue-property-decorator'
-import { RouteConfig } from 'vue-router'
+import { RouteConfig, RouteMeta } from 'vue-router'
 import { Tree } from 'element-ui'
 import { getRoutes, getRoles, createRole, deleteRole, updateRole } from '@/api/roles'
+import { checkPermission } from '@/utils/permission' // Use permission directly
+import { asyncRoutes } from '@/router'
+
+const routes = [...asyncRoutes]
 
 interface IRole {
   key: number
@@ -158,6 +166,12 @@ export default class extends Vue {
     label: 'title'
   }
 
+  private rules = {
+    name: [{ required: true, message: 'role name is required', trigger: 'blur' }]
+  }
+
+  private checkPermission = checkPermission
+
   get routesTreeData() {
     return this.generateTreeData(this.reshapedRoutes)
   }
@@ -170,8 +184,20 @@ export default class extends Vue {
 
   private async getRoutes() {
     const { data } = await getRoutes({ /* Your params here */ })
-    this.serviceRoutes = data.routes
-    this.reshapedRoutes = this.reshapeRoutes(data.routes)
+    const routes = []
+    if (checkPermission(['peopling-admin'])) {
+      for (let index = 0; index < data.routes.length; index++) {
+        const roles = data.routes[index]?.meta?.roles
+        if (roles !== undefined && roles.length > 0) {
+          routes.push(data.routes[index])
+        }
+      }
+      this.serviceRoutes = routes
+      this.reshapedRoutes = this.reshapeRoutes(routes)
+    } else {
+      this.serviceRoutes = data.routes
+      this.reshapedRoutes = this.reshapeRoutes(data.routes)
+    }
   }
 
   private async getRoles() {
@@ -187,7 +213,7 @@ export default class extends Vue {
         title: '',
         path: ''
       }
-      
+
       tmp.title = this.$t(`route.${route.meta?.title}`).toString()
       tmp.path = route.path
       if (route.children) {
@@ -249,18 +275,25 @@ export default class extends Vue {
   }
 
   private handleEdit(scope: any) {
-    this.dialogType = 'edit'
-    this.dialogVisible = true
-    this.checkStrictly = true
-    this.role = cloneDeep(scope.row)
-    this.$nextTick(() => {
-      const routes = this.flattenRoutes(this.reshapeRoutes(this.role.routes))
-      const treeData = this.generateTreeData(routes)
-      const treeDataKeys = treeData.map(t => t.path);
-      (this.$refs.tree as Tree).setCheckedKeys(treeDataKeys)
-      // set checked state of a node not affects its father and child nodes
-      this.checkStrictly = false
-    })
+    if (scope.row.key !== 'developer-admin' && scope.row.key !== 'peopling-admin') {
+      this.dialogType = 'edit'
+      this.dialogVisible = true
+      this.checkStrictly = true
+      this.role = cloneDeep(scope.row)
+      this.$nextTick(() => {
+        const routes = this.flattenRoutes(this.reshapeRoutes(this.role.routes))
+        const treeData = this.generateTreeData(routes)
+        const treeDataKeys = treeData.map(t => t.path);
+        (this.$refs.tree as Tree).setCheckedKeys(treeDataKeys)
+        // set checked state of a node not affects its father and child nodes
+        this.checkStrictly = false
+      })
+    } else {
+      this.$message({
+        type: 'warning',
+        message: 'Bu işlemi gerçekleştiremezsiniz, sistem yöneticisi ile görüşünüz.'
+      })
+    }
   }
 
   private handleDelete(scope: any) {
@@ -301,32 +334,63 @@ export default class extends Vue {
     const checkedKeys = (this.$refs.tree as Tree).getCheckedKeys()
 
     this.role.routes = this.generateTree(cloneDeep(this.serviceRoutes), '/', checkedKeys)
-
-    if (isEdit) {
-      await updateRole(this.role.key, { role: this.role })
-      for (let index = 0; index < this.rolesList.length; index++) {
-        if (this.rolesList[index].key === this.role.key) {
-          this.rolesList.splice(index, 1, Object.assign({}, this.role))
-          break
+    if (this.role.name !== '') {
+      if (isEdit) {
+        await updateRole(this.role.key, { role: this.role })
+        for (let index = 0; index < this.rolesList.length; index++) {
+          if (this.rolesList[index].key === this.role.key) {
+            this.rolesList.splice(index, 1, Object.assign({}, this.role))
+            break
+          }
         }
+      } else {
+        const { data } = await createRole({ role: this.role })
+        this.setRouteRoles(data.key)
+        this.role.key = data.key
+        this.rolesList.push(this.role)
       }
-    } else {
-      const { data } = await createRole({ role: this.role })
-      this.role.key = data.key
-      this.rolesList.push(this.role)
-    }
 
-    const { description, key, name } = this.role
-    this.dialogVisible = false
-    this.$notify({
-      title: 'Success',
-      dangerouslyUseHTMLString: true,
-      message: `
+      const { description, key, name } = this.role
+      this.dialogVisible = false
+      this.$notify({
+        title: 'Success',
+        dangerouslyUseHTMLString: true,
+        message: `
           <div>Role Key: ${key}</div>
           <div>Role Name: ${name}</div>
           <div>Description: ${description}</div>
         `,
-      type: 'success'
+        type: 'success'
+      })
+    }
+  }
+
+  private setRouteRoles(key : any) {
+    const newRoleKey = key
+
+    this.role.routes.forEach((item: any): void => {
+      routes.forEach(route => {
+        const currentRoles = ((route?.meta) as RouteMeta)?.roles as string[]
+        if (currentRoles) {
+          if (route?.path !== undefined && item?.path !== undefined && route?.path === item?.path) {
+            // yetkisi olan path'lere yetkili key ata
+            currentRoles.push(newRoleKey)
+          }
+        } else {
+          // hiç rol yok rol ekle route meta ve rol ekleyerek
+          /**
+             *          if (!route?.meta) {
+              route.meta = {
+                roles: [newRoleKey]
+              }
+            } else {
+              (route.meta as any) = {} as RouteMeta[]
+              ((route.meta as any)?.roles as [string]).push((newRoleKey))
+            }
+             */
+        }
+        console.log('Yeni route', route)
+      })
     })
   }
 
@@ -350,7 +414,7 @@ export default class extends Vue {
 }
 </script>
 
-<style lang="scss" scoped> 
+<style lang="scss" scoped>
 .app-container {
   .roles-table {
     margin-top: 30px;

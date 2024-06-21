@@ -11,6 +11,8 @@ info:
 servers:
   - url: /mock-api/v1
 tags:
+  - name: employees
+    description: employees data related api.
   - name: articles
     description: Articles data related api.
   - name: roles
@@ -20,6 +22,763 @@ tags:
   - name: users
     description: Users related api.
 paths:
+  /employees:
+    get:
+      tags:
+        - employees
+      summary: Get employee List
+      description: Return a list of employees.
+      operationId: getEmployees
+      parameters:
+        - name: username
+          in: query
+          description: Used to filter employees by username.
+          schema:
+            $ref: '#/components/schemas/employee/properties/username'
+        - name: salaryType
+          in: query
+          description: Used to filter articles by matched salaryType substring.
+          schema:
+            $ref: '#/components/schemas/employee/properties/salaryType'
+        - name: page
+          in: query
+          description: The wanted page number (one page).
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+        - name: limit
+          in: query
+          description: The maximum number of employees returned for one page.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 50
+        - name: sort
+          in: query
+          description: Optional sorting order for employees.
+          schema:
+            type: string
+            enum:
+              - +id
+              - -id
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                  data:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                        format: int32
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/employee'
+    post:
+      tags:
+        - employees
+      summary: Create New employee
+      description: Create a new employee.
+      operationId: createEmployee
+      security:
+        - AccessTokenAuth: []
+      parameters:
+        - name: employee
+          in: query
+          required: true
+          description: The data for new employee.
+          schema:
+            $ref: '#/components/schemas/employee'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                  data:
+                    type: object
+                    properties:
+                      article:
+                        $ref: '#/components/schemas/employee'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+  /employees/{id}:
+    get:
+      tags:
+        - employees
+      summary: Get employee Detail
+      description: Get employee detail by ID.
+      operationId: getEmployee
+      security:
+        - AccessTokenAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: employee id.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                  data:
+                    type: object
+                    properties:
+                      article:
+                        $ref: '#/components/schemas/Employee'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - employees
+      summary: Update employee Detail
+      description: Update employee deatail by ID.
+      operationId: updateEmployee
+      security:
+        - AccessTokenAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: employee id.
+          schema:
+            type: integer
+            format: int64
+        - name: article
+          in: query
+          required: true
+          description: data for the updated employee.
+          schema:
+            $ref: '#/components/schemas/Employee'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                  data:
+                    type: object
+                    properties:
+                      article:
+                        $ref: '#/components/schemas/Employee'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - employees
+      summary: Delete employees
+      description: Delete employee by ID.
+      operationId: deleteemployee
+      security:
+        - AccessTokenAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: employee id.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+  /companies:
+    get:
+      tags:
+        - companies
+      summary: Get company List
+      description: Return a list of companies.
+      operationId: getCompanies
+      parameters:
+        - name: username
+          in: query
+          description: Used to filter companies by companyname.
+          schema:
+            $ref: '#/components/schemas/company/properties/companyname'
+        - name: status
+          in: query
+          description: Used to filter companies by status.
+          schema:
+            $ref: '#/components/schemas/company/properties/status'
+        - name: salaryType
+          in: query
+          description: Used to filter companies by salaryType.
+          schema:
+            $ref: '#/components/schemas/company/properties/salaryType'
+        - name: page
+          in: query
+          description: The wanted page number (one page).
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+        - name: limit
+          in: query
+          description: The maximum number of companies returned for one page.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 50
+        - name: sort
+          in: query
+          description: Optional sorting order for companies.
+          schema:
+            type: string
+            enum:
+              - +id
+              - -id
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                  data:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                        format: int32
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Company'
+    post:
+      tags:
+        - companies
+      summary: Create New company
+      description: Create a new company.
+      operationId: createCompany
+      security:
+        - AccessTokenAuth: []
+      parameters:
+        - name: company
+          in: query
+          required: true
+          description: The data for new company.
+          schema:
+            $ref: '#/components/schemas/Company'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                  data:
+                    type: object
+                    properties:
+                      article:
+                        $ref: '#/components/schemas/Company'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+  /companies/{id}:
+    get:
+      tags:
+        - companies
+      summary: Get company Detail
+      description: Get company detail by ID.
+      operationId: getCompany
+      security:
+        - AccessTokenAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: company id.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                  data:
+                    type: object
+                    properties:
+                      article:
+                        $ref: '#/components/schemas/Company'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - companies
+      summary: Update company Detail
+      description: Update company deatail by ID.
+      operationId: updateCompany
+      security:
+        - AccessTokenAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: company id.
+          schema:
+            type: integer
+            format: int64
+        - name: article
+          in: query
+          required: true
+          description: data for the updated company.
+          schema:
+            $ref: '#/components/schemas/Company'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                  data:
+                    type: object
+                    properties:
+                      article:
+                        $ref: '#/components/schemas/Company'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - companies
+      summary: Delete companies
+      description: Delete company by ID.
+      operationId: deletecompany
+      security:
+        - AccessTokenAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: company id.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+  /parameters:
+    get:
+      tags:
+        - parameters
+      summary: Get parameter List
+      description: Return a list of parameters.
+      operationId: getParameters
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                  data:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                        format: int32
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Parameter'
+    post:
+      tags:
+        - parameters
+      summary: Create New parameter
+      description: Create a new parameter.
+      operationId: createParameter
+      security:
+        - AccessTokenAuth: []
+      parameters:
+        - name: parameter
+          in: query
+          required: true
+          description: The data for new parameter.
+          schema:
+            $ref: '#/components/schemas/Parameter'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                  data:
+                    type: object
+                    properties:
+                      article:
+                        $ref: '#/components/schemas/Parameter'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+  /parameters/{id}:
+    get:
+      tags:
+        - parameters
+      summary: Get parameter Detail
+      description: Get parameter detail by ID.
+      operationId: getParameter
+      security:
+        - AccessTokenAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: parameter id.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                  data:
+                    type: object
+                    properties:
+                      article:
+                        $ref: '#/components/schemas/Parameter'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - parameters
+      summary: Update parameter Detail
+      description: Update parameter deatail by ID.
+      operationId: updateParameter
+      security:
+        - AccessTokenAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: parameter id.
+          schema:
+            type: integer
+            format: int64
+        - name: article
+          in: query
+          required: true
+          description: data for the updated parameter.
+          schema:
+            $ref: '#/components/schemas/Parameter'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                  data:
+                    type: object
+                    properties:
+                      article:
+                        $ref: '#/components/schemas/Parameter'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - parameters
+      summary: Delete parameters
+      description: Delete parameter by ID.
+      operationId: deleteParameter
+      security:
+        - AccessTokenAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: parameter id.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+  /variables:
+    get:
+      tags:
+        - variables
+      summary: Get variable List
+      description: Return a list of variables.
+      operationId: getVariables
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                  data:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                        format: int32
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Variable'
+    post:
+      tags:
+        - variables
+      summary: Create New variable
+      description: Create a new variable.
+      operationId: createVariable
+      security:
+        - AccessTokenAuth: []
+      parameters:
+        - name: variable
+          in: query
+          required: true
+          description: The data for new variable.
+          schema:
+            $ref: '#/components/schemas/Variable'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                  data:
+                    type: object
+                    properties:
+                      article:
+                        $ref: '#/components/schemas/Variable'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+  /variables/{id}:
+    get:
+      tags:
+        - variables
+      summary: Get variable Detail
+      description: Get variable detail by ID.
+      operationId: getVariable
+      security:
+        - AccessTokenAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: variable id.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                  data:
+                    type: object
+                    properties:
+                      article:
+                        $ref: '#/components/schemas/Variable'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - variables
+      summary: Update variable Detail
+      description: Update variable deatail by ID.
+      operationId: updateVariable
+      security:
+        - AccessTokenAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: variable id.
+          schema:
+            type: integer
+            format: int64
+        - name: article
+          in: query
+          required: true
+          description: data for the updated variable.
+          schema:
+            $ref: '#/components/schemas/Variable'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                  data:
+                    type: object
+                    properties:
+                      article:
+                        $ref: '#/components/schemas/Variable'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - variables
+      summary: Delete variables
+      description: Delete variable by ID.
+      operationId: deleteVariable
+      security:
+        - AccessTokenAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: variable id.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
   /articles:
     get:
       tags:
@@ -477,6 +1236,39 @@ paths:
                           $ref: '#/components/schemas/User'
         401:
           $ref: '#/components/responses/Unauthorized'
+    post:
+      tags:
+        - users
+      summary: Create New user
+      description: Create a new user.
+      operationId: createUser
+      security:
+        - AccessTokenAuth: []
+      parameters:
+        - name: user
+          in: query
+          required: true
+          description: The data for new user.
+          schema:
+            $ref: '#/components/schemas/User'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                  data:
+                    type: object
+                    properties:
+                      article:
+                        $ref: '#/components/schemas/User'
+        401:
+          $ref: '#/components/responses/Unauthorized' 
   /users/register:
     post:
       tags:
@@ -710,6 +1502,206 @@ paths:
                         $ref: '#/components/schemas/User'
         401:
           $ref: '#/components/responses/Unauthorized'
+  /budgets:
+    get:
+      tags:
+        - budgets
+      summary: Get budget List
+      description: Return a list of budgets.
+      operationId: getBudgets
+      parameters:
+        - name: username
+          in: query
+          description: Used to filter budgets by username.
+          schema:
+            $ref: '#/components/schemas/budget/properties/username'
+        - name: page
+          in: query
+          description: The wanted page number (one page).
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+        - name: limit
+          in: query
+          description: The maximum number of budgets returned for one page.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 50
+        - name: sort
+          in: query
+          description: Optional sorting order for budgets.
+          schema:
+            type: string
+            enum:
+              - +id
+              - -id
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                  data:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                        format: int32
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/budget'
+    post:
+      tags:
+        - budgets
+      summary: Create New budget
+      description: Create a new budget.
+      operationId: createBudget
+      security:
+        - AccessTokenAuth: []
+      parameters:
+        - name: budget
+          in: query
+          required: true
+          description: The data for new budget.
+          schema:
+            $ref: '#/components/schemas/budget'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                  data:
+                    type: object
+                    properties:
+                      article:
+                        $ref: '#/components/schemas/budget'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+  /budgets/{id}:
+    get:
+      tags:
+        - budgets
+      summary: Get budget Detail
+      description: Get budget detail by ID.
+      operationId: getBudget
+      security:
+        - AccessTokenAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: budget id.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                  data:
+                    type: object
+                    properties:
+                      article:
+                        $ref: '#/components/schemas/Budget'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - budgets
+      summary: Update budget Detail
+      description: Update budget deatail by ID.
+      operationId: updateBudget
+      security:
+        - AccessTokenAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: budget id.
+          schema:
+            type: integer
+            format: int64
+        - name: article
+          in: query
+          required: true
+          description: data for the updated budget.
+          schema:
+            $ref: '#/components/schemas/Budget'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                  data:
+                    type: object
+                    properties:
+                      article:
+                        $ref: '#/components/schemas/Budget'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - budgets
+      summary: Delete budgets
+      description: Delete budget by ID.
+      operationId: deletebudget
+      security:
+        - AccessTokenAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: budget id.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
 components:
   securitySchemes:
     AccessTokenAuth:

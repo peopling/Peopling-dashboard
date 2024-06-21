@@ -7,7 +7,7 @@
     >
       <div>
         <span
-          v-permission="['admin']"
+          v-permission="['peopling-admin']"
           class="permission-alert"
         >
           Only
@@ -17,11 +17,11 @@
           >admin</el-tag> can see this
         </span>
         <el-tag
-          v-permission="['admin']"
+          v-permission="['developer-admin']"
           class="permission-sourceCode"
           type="info"
         >
-          v-permission="['admin']"
+          v-permission="['developer-admin']"
         </el-tag>
       </div>
 
@@ -47,7 +47,7 @@
 
       <div>
         <span
-          v-permission="['admin','editor']"
+          v-permission="['developer-admin','editor']"
           class="permission-alert"
         >
           Both
@@ -61,16 +61,17 @@
           >editor</el-tag> can see this
         </span>
         <el-tag
-          v-permission="['admin','editor']"
+          v-permission="['developer-admin','editor']"
           class="permission-sourceCode"
           type="info"
         >
-          v-permission="['admin','editor']"
+          v-permission="['developer-admin','editor']"
         </el-tag>
       </div>
     </div>
 
     <div
+      v-if="checkPermission(['developer-admin'])"
       :key="'checkPermission'+key"
       style="margin-top:60px;"
     >
@@ -84,7 +85,7 @@
         style="width:550px;"
       >
         <el-tab-pane
-          v-if="checkPermission(['admin'])"
+          v-if="checkPermission(['developer-admin'])"
           label="Admin"
         >
           Admin can see this
@@ -92,7 +93,7 @@
             class="permission-sourceCode"
             type="info"
           >
-            v-if="checkPermission(['admin')"
+            v-if="checkPermission(['developer-admin')"
           </el-tag>
         </el-tab-pane>
 
@@ -110,7 +111,7 @@
         </el-tab-pane>
 
         <el-tab-pane
-          v-if="checkPermission(['admin','editor'])"
+          v-if="checkPermission(['developer-admin','editor'])"
           label="Admin-OR-Editor"
         >
           Both admin or editor can see this
@@ -118,7 +119,7 @@
             class="permission-sourceCode"
             type="info"
           >
-            v-if="checkPermission(['admin','editor'])"
+            v-if="checkPermission(['developer-admin','editor'])"
           </el-tag>
         </el-tab-pane>
       </el-tabs>
@@ -138,7 +139,7 @@ import SwitchRoles from './components/SwitchRoles.vue'
   }
 })
 export default class extends Vue {
-  private key = 1 // 为了能每次切换权限的时候重新初始化指令
+  private key = 1
   private checkPermission = checkPermission
 
   private handleRolesChange() {

@@ -15,15 +15,9 @@
           <el-card>
             <el-tabs v-model="activeTab">
               <el-tab-pane
-                label="Activity"
-                name="activity"
-              >
-                <activity />
-              </el-tab-pane>
-              <el-tab-pane
                 label="Timeline"
                 name="timeline"
-              >
+                v-if="checkPermission(['developer-admin'])" >
                 <timeline />
               </el-tab-pane>
               <el-tab-pane
@@ -47,6 +41,7 @@ import Account from './components/Account.vue'
 import Activity from './components/Activity.vue'
 import Timeline from './components/Timeline.vue'
 import UserCard from './components/UserCard.vue'
+import { checkPermission } from '@/utils/permission' // Use permission directly
 
 export interface IProfile {
   name: string
@@ -73,7 +68,8 @@ const defaultProfile: IProfile = {
 })
 export default class extends Vue {
   private user = defaultProfile
-  private activeTab = 'activity'
+  private activeTab = 'account'
+  private checkPermission = checkPermission
 
   get name() {
     return UserModule.name

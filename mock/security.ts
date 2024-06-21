@@ -5,7 +5,7 @@ export const accessTokenAuth = (req: Request, res: Response, next: NextFunction)
   if (!accessToken) {
     return res.status(401).json({
       code: 50001,
-      messaege: 'Invalid Access Token'
+      message: 'Invalid Access Token'
     })
   }
   next()

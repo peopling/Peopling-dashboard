@@ -1,5 +1,6 @@
 interface ISettings {
   title: string // Overrides the default title
+  iconUrl: string
   showSettings: boolean // Controls settings panel display
   showTagsView: boolean // Controls tagsview display
   showSidebarLogo: boolean // Controls siderbar logo display
@@ -13,6 +14,7 @@ interface ISettings {
 // You can customize below settings :)
 const settings: ISettings = {
   title: 'Peopling Dashboard',
+  iconUrl: 'favicon.ico',
   showSettings: true,
   showTagsView: true,
   fixedHeader: false,

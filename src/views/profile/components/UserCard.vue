@@ -4,7 +4,7 @@
       slot="header"
       class="clearfix"
     >
-      <span>About me</span>
+      <span>Hakkımda</span>
     </div>
 
     <div class="user-profile">
@@ -15,7 +15,7 @@
           :width="'100px'"
           :hoverable="false"
         >
-          <div>Hello</div>
+          <div>Merhaba</div>
           {{ user.roles }}
         </pan-thumb>
       </div>
@@ -28,18 +28,8 @@
         </div>
       </div>
     </div>
-
+<!--
     <div class="user-bio">
-      <div class="user-education user-bio-section">
-        <div class="user-bio-section-header">
-          <svg-icon name="education" /><span>Education</span>
-        </div>
-        <div class="user-bio-section-body">
-          <div class="text-muted">
-            JS in Computer Science from the University of Technology
-          </div>
-        </div>
-      </div>
 
       <div class="user-skills user-bio-section">
         <div class="user-bio-section-header">
@@ -68,6 +58,9 @@
         </div>
       </div>
     </div>
+
+ -->
+
   </el-card>
 </template>
 
